@@ -65,7 +65,7 @@ func main() {
 
 	// Show version if requested
 	if *showVersion || *showVersionShort {
-		fmt.Printf("simulate25b version %s\n", version)
+		fmt.Printf("version %s\n", version)
 		os.Exit(0)
 	}
 
@@ -86,15 +86,21 @@ func main() {
 	}
 
 	if *libFile == "" {
-		fmt.Fprintf(os.Stderr, "simulate25b version %s\n\n", version)
-		fmt.Fprintf(os.Stderr, "Usage: %s -lib <lib_data.txt> [-tile <tile_data.txt>] [-pos <xy_comp.txt>]\n", os.Args[0])
-		fmt.Fprintf(os.Stderr, "  lib_data.txt format: lib_name reads_count output_file_path\n")
-		fmt.Fprintf(os.Stderr, "  -tile: optional, defaults to tile_data.txt in program directory\n")
-		fmt.Fprintf(os.Stderr, "  -pos: optional, defaults to xy_comp.txt in program directory\n")
-		fmt.Fprintf(os.Stderr, "  -version, -v: show version information\n")
+		fmt.Fprintf(os.Stderr, "version %s\n\n", version)
+		fmt.Fprintf(os.Stderr, "Usage: %s -lib <lib_data.txt> [-tile <tile_data.txt>] [-pos <xy_comp.txt>] -o <output_directory>\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, " \tlib_data.txt format: lib_name reads_count output_file_path\n")
+		fmt.Fprintf(os.Stderr, "\t-tile: optional, defaults to tile_data.txt in program directory\n")
+		fmt.Fprintf(os.Stderr, "\t-pos: optional, defaults to xy_comp.txt in program directory\n")
+		fmt.Fprintf(os.Stderr, "\t-o: optional, output directory (default: ./)\n")
 		os.Exit(1)
 	}
 
+	// Check if output directory exists
+	outputDir := flag.String("o", "./", "output directory")
+	if _, err := os.Stat(*outputDir); os.IsNotExist(err) {
+		fmt.Fprintf(os.Stderr, "Error: output directory %s does not exist\n", *outputDir)
+		os.Exit(1)
+	}
 	// Initialize random seed
 	rand.Seed(time.Now().UnixNano())
 
