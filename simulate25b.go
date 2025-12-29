@@ -52,7 +52,7 @@ func (r ReadIDList) Less(i, j int) bool {
 func (r ReadIDList) Swap(i, j int) { r[i], r[j] = r[j], r[i] }
 
 var (
-	version = "0.1.1"
+	version = "0.1.2"
 )
 
 func main() {
