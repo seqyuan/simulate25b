@@ -1,0 +1,46 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get tag name
+        id: tag
+        run: echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Create source archive
+        run: |
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          git archive --format=tar.gz --prefix=annotask-$TAG_NAME/ HEAD > annotask-$TAG_NAME-source.tar.gz
+          git archive --format=zip --prefix=annotask-$TAG_NAME/ HEAD > annotask-$TAG_NAME-source.zip
+
+      - name: Create checksums
+        run: |
+          sha256sum annotask-*-source.tar.gz annotask-*-source.zip > checksums.txt
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            annotask-*-source.tar.gz
+            annotask-*-source.zip
+            checksums.txt
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+
